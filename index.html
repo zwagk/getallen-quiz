@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getallen - Dutch Number Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F5F2EB;
+      --surface: #FDFCF8;
+      --surface2: #EFECE3;
+      --ink: #1A1712;
+      --ink2: #5A5650;
+      --ink3: #9A958E;
+      --accent: #C84B2F;
+      --accent-light: #F5E8E4;
+      --accent-dark: #8C3320;
+      --green: #2A7A5A;
+      --green-light: #E3F2EC;
+      --red: #C0392B;
+      --red-light: #FAE8E6;
+      --border: rgba(26,23,18,0.12);
+      --border-strong: rgba(26,23,18,0.22);
+      --radius: 6px;
+      --radius-lg: 12px;
+    }
+
+    html.dark {
+      --bg: #141210;
+      --surface: #1E1B18;
+      --surface2: #272320;
+      --ink: #F0EDE6;
+      --ink2: #A09890;
+      --ink3: #6A6460;
+      --accent: #E05A38;
+      --accent-light: #2A1A14;
+      --accent-dark: #F07050;
+      --green: #3AAA78;
+      --green-light: #0E2419;
+      --red: #D94F4F;
+      --red-light: #261212;
+      --border: rgba(240,237,230,0.1);
+      --border-strong: rgba(240,237,230,0.18);
+    }
+
+    .dark-toggle {
+      background: none;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--ink2);
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      line-height: 1;
+    }
+    .dark-toggle:hover { border-color: var(--accent); color: var(--ink); }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .logo-word {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .logo-flag {
+      font-size: 20px;
+    }
+    .logo-sub {
+      font-size: 12px;
+      color: var(--ink3);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .header-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink2);
+      display: none;
+    }
+    .header-score.visible { display: block; }
+    .header-score span { color: var(--accent); font-weight: 500; }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: 'getallen';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(80px, 18vw, 200px);
+      color: var(--border-strong);
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--ink2);
+      font-weight: 300;
+      max-width: 400px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* ── MODE SELECTOR ── */
+    .mode-wrap {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .mode-btn {
+      position: relative;
+      padding: 0;
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      width: 110px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(200,75,47,0.12);
+    }
+
+    .mode-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .mode-btn-inner {
+      padding: 18px 16px 14px;
+    }
+
+    .mode-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      color: var(--ink);
+      line-height: 1;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .mode-btn.active .mode-num { color: var(--accent-dark); }
+
+    .mode-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink3);
+      display: block;
+    }
+    .mode-btn.active .mode-label { color: var(--accent); }
+
+    .mode-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .mode-btn.active .mode-badge { opacity: 1; }
+
+    /* ── TIMER SELECTOR ── */
+    .config-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+
+    .config-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink3);
+      font-weight: 500;
+    }
+
+    .timer-wrap {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .timer-btn {
+      padding: 7px 18px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 100px;
+      background: var(--surface);
+      color: var(--ink2);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .timer-btn:hover { border-color: var(--accent); color: var(--ink); }
+    .timer-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      font-weight: 500;
+    }
+    .timer-btn:active { transform: scale(0.96); }
+
+    .custom-time-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 100px;
+      background: var(--surface);
+      padding: 4px 6px 4px 14px;
+      transition: border-color 0.2s;
+      cursor: text;
+    }
+    .custom-time-wrap:focus-within {
+      border-color: var(--accent);
+    }
+    .custom-time-wrap.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .custom-time-input {
+      width: 32px;
+      border: none;
+      background: transparent;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    .custom-time-input::-webkit-outer-spin-button,
+    .custom-time-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .custom-time-wrap.active .custom-time-input { color: var(--accent-dark); font-weight: 500; }
+    .custom-time-label { font-size: 13px; color: var(--ink3); font-family: 'DM Mono', monospace; }
+
+    /* ── ACCENT TOGGLE ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      color: var(--ink2);
+      user-select: none;
+      cursor: pointer;
+    }
+    .toggle-label strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 100px;
+      background: var(--surface2);
+      border: 1px solid var(--border-strong);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--ink3);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-track {
+      background: var(--accent-light);
+      border-color: var(--accent);
+    }
+    .toggle-switch input:checked + .toggle-track::after {
+      transform: translateX(18px);
+      background: var(--accent);
+    }
+
+    .accent-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid rgba(42,122,90,0.2);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .accent-badge.off {
+      background: var(--surface2);
+      color: var(--ink3);
+      border-color: var(--border);
+    }
+    .timer-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .timer-display.stopwatch { color: var(--ink2); }
+    .timer-display.warning { color: var(--accent); }
+    .timer-display.danger  { color: var(--red); animation: pulse 0.6s ease infinite alternate; }
+
+    @keyframes pulse {
+      from { opacity: 1; }
+      to   { opacity: 0.5; }
+    }
+
+    .timer-icon { font-size: 16px; }
+
+    .timer-bar-wrap {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .timer-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 1s linear, background 0.5s;
+      width: 100%;
+    }
+    .timer-bar.warning { background: #E8873A; }
+    .timer-bar.danger  { background: var(--red); }
+
+    /* ── START BUTTON ── */
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 36px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, opacity 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .start-btn:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); }
+    .start-btn:active:not(:disabled) { transform: scale(0.98); }
+    .start-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .start-icon { font-size: 18px; }
+
+    /* ── QUIZ SECTION ── */
+    #quizSection {
+      display: none;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .quiz-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .quiz-title em { font-style: italic; color: var(--accent); }
+
+    .quiz-hint {
+      font-size: 13px;
+      color: var(--ink3);
+    }
+
+    .quiz-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-check {
+      padding: 9px 22px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-check:hover { background: var(--accent-dark); }
+    .btn-check:active { transform: scale(0.97); }
+
+    .btn-reset {
+      padding: 9px 22px;
+      background: var(--surface);
+      color: var(--ink2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-reset:hover { background: var(--surface2); }
+    .btn-reset:active { transform: scale(0.97); }
+
+    .btn-back {
+      padding: 9px 18px;
+      background: transparent;
+      color: var(--ink3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-back:hover { color: var(--ink); border-color: var(--border-strong); }
+
+    /* ── SCORE BANNER ── */
+    .score-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .score-banner.visible { display: flex; animation: fadeUp 0.3s ease; }
+
+    .score-main {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--ink);
+    }
+    .score-main .frac { color: var(--accent); }
+
+    .score-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink2);
+    }
+
+    .score-msg {
+      font-size: 14px;
+      color: var(--ink2);
+    }
+
+    /* ── GRID ── */
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+
+    .quiz-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .quiz-item:focus-within {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+    .quiz-item.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+    .quiz-item.wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+    }
+
+    .n-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink3);
+      min-width: 28px;
+      flex-shrink: 0;
+    }
+    .quiz-item.correct .n-label { color: var(--green); }
+    .quiz-item.wrong .n-label { color: var(--red); }
+
+    .ans-input {
+      flex: 1;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      outline: none;
+      min-width: 0;
+    }
+    .ans-input::placeholder { color: var(--ink3); font-weight: 300; }
+    .ans-input:disabled { color: var(--ink2); }
+    .ans-input.strikethrough { text-decoration: line-through; color: var(--red); }
+
+    .correction {
+      font-size: 12px;
+      color: var(--green);
+      font-family: 'DM Mono', monospace;
+      flex-shrink: 0;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: none;
+    }
+    .quiz-item.correct .status-dot { display: block; background: var(--green); }
+    .quiz-item.wrong .status-dot { display: block; background: var(--red); }
+
+    /* ── SURVIVAL MODE ── */
+    #survivalSection {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .survival-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 2rem;
+    }
+
+    .survival-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .survival-title em { font-style: italic; color: var(--accent); }
+
+    .survival-lives {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .life-pip {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      transition: background 0.3s, transform 0.2s;
+    }
+    .life-pip.lost {
+      background: var(--border-strong);
+      transform: scale(0.75);
+    }
+
+    .survival-streak-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .survival-streak-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink3);
+    }
+    .survival-streak {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .survival-streak.hot { color: var(--accent); }
+
+    .survival-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .survival-card.flash-correct {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+    .survival-card.flash-wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+    }
+
+    .survival-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3rem, 12vw, 6rem);
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+      transition: transform 0.2s;
+    }
+
+    .survival-input-row {
+      display: flex;
+      gap: 10px;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+
+    .survival-input {
+      flex: 1;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: var(--bg);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+      text-align: center;
+    }
+    .survival-input:focus { border-color: var(--accent); background: var(--surface); }
+    .survival-input:disabled { opacity: 0.5; }
+
+    .survival-submit {
+      padding: 12px 18px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .survival-submit:hover { background: var(--accent-dark); }
+    .survival-submit:active { transform: scale(0.95); }
+    .survival-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .survival-feedback {
+      min-height: 24px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-family: 'DM Mono', monospace;
+      color: var(--ink2);
+      transition: opacity 0.3s;
+    }
+    .survival-feedback.correct-fb { color: var(--green); }
+    .survival-feedback.wrong-fb { color: var(--red); }
+
+    .survival-history {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      animation: fadeUp 0.2s ease both;
+    }
+    .history-item.h-correct { background: var(--green-light); color: var(--green); }
+    .history-item.h-wrong   { background: var(--red-light);   color: var(--red); }
+    .history-item .h-num { font-family: 'DM Mono', monospace; font-weight: 500; }
+    .history-item .h-ans { font-family: 'DM Mono', monospace; }
+    .history-item .h-icon { font-size: 14px; }
+
+    .survival-gameover {
+      text-align: center;
+      padding: 3rem 1rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .gameover-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 42px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .gameover-score {
+      font-size: 16px;
+      color: var(--ink2);
+      margin-bottom: 6px;
+    }
+    .gameover-streak {
+      font-size: 14px;
+      color: var(--ink3);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      color: var(--ink3);
+      border-top: 1px solid var(--border);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1.5rem 3rem; }
+      #quizSection { padding: 0 1rem 3rem; }
+      .quiz-header { flex-direction: column; align-items: flex-start; }
+      .quiz-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      header { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <span class="logo-flag">🇳🇱</span>
+      <span class="logo-word">Getallen</span>
+      <span class="logo-sub">Dutch Quiz</span>
+    </div>
+    <div class="header-score" id="headerScore">
+      Score: <span id="headerScoreVal">-</span>
+    </div>
+    <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+  </header>
+
+  <!-- HERO / MODE SELECT -->
+  <section class="hero" id="heroSection">
+    <p class="hero-eyebrow">Learn Dutch</p>
+    <h1>How high can<br>you <em>count</em>?</h1>
+    <p class="hero-desc">Pick a range and type the Dutch translation for every number.</p>
+
+    <div class="mode-wrap">
+      <button class="mode-btn" data-n="10" onclick="selectMode(10)">
+        <div class="mode-badge"></div>
+        <div class="mode-btn-inner">
+          <span class="mode-num">10</span>
+          <span class="mode-label">Numbers</span>
+        </div>
+      </button>
+      <button class="mode-btn" data-n="50" onclick="selectMode(50)">
+        <div class="mode-badge"></div>
+        <div class="mode-btn-inner">
+          <span class="mode-num">50</span>
+          <span class="mode-label">Numbers</span>
+        </div>
+      </button>
+      <button class="mode-btn" data-n="100" onclick="selectMode(100)">
+        <div class="mode-badge"></div>
+        <div class="mode-btn-inner">
+          <span class="mode-num">100</span>
+          <span class="mode-label">Numbers</span>
+        </div>
+      </button>
+      <button class="mode-btn mode-btn--random" data-n="random" onclick="selectMode('random')">
+        <div class="mode-badge"></div>
+        <div class="mode-btn-inner">
+          <span class="mode-num" style="font-size:26px;">🎲</span>
+          <span class="mode-label">Random</span>
+        </div>
+      </button>
+    </div>
+
+    <div class="config-row">
+      <span class="config-label">⏱ Time limit</span>
+      <div class="timer-wrap">
+        <button class="timer-btn" data-secs="0" onclick="selectTimer(0)">No limit</button>
+        <button class="timer-btn" data-secs="60" onclick="selectTimer(60)">1 min</button>
+        <button class="timer-btn active" data-secs="300" onclick="selectTimer(300)">5 min</button>
+        <button class="timer-btn" data-secs="600" onclick="selectTimer(600)">10 min</button>
+        <div class="custom-time-wrap" id="customWrap" onclick="focusCustom()">
+          <input class="custom-time-input" id="customMins" type="number" min="1" max="999" placeholder="-" oninput="onCustomInput()" />
+          <span class="custom-time-label">min</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <label class="toggle-switch" for="accentToggle">
+        <input type="checkbox" id="accentToggle" checked onchange="onAccentToggle()" />
+        <span class="toggle-track"></span>
+      </label>
+      <label class="toggle-label" for="accentToggle">
+        <strong>Ignore accents</strong>
+      </label>
+      <span class="accent-badge" id="accentBadge">ë = e ✓</span>
+    </div>
+
+    <button class="start-btn" id="startBtn" disabled onclick="startQuiz()">
+      <span class="start-icon">▶</span> Begin Quiz
+    </button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quizSection">
+    <div class="quiz-header">
+      <div>
+        <div class="quiz-title">1 - <em id="quizRange">10</em></div>
+        <div class="quiz-hint">Press Enter to move to next field &nbsp;·&nbsp; <span id="accentHint">accents ignored</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div class="timer-display" id="timerDisplay">
+          <span class="timer-icon">⏱</span>
+          <span id="timerVal">5:00</span>
+        </div>
+        <div class="quiz-actions">
+          <button class="btn-back" onclick="goBack()">← Back</button>
+          <button class="btn-reset" onclick="resetQuiz()">Try again</button>
+          <button class="btn-check" onclick="checkAnswers()">Check answers</button>
+        </div>
+      </div>
+    </div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
+
+    <div class="score-banner" id="scoreBanner">
+      <div>
+        <div class="score-main">
+          <span class="frac" id="scoreCorrect">0</span> / <span id="scoreTotal">10</span> correct
+        </div>
+        <div class="score-pct" id="scorePct"></div>
+      </div>
+      <div class="score-msg" id="scoreMsg"></div>
+    </div>
+
+    <div class="quiz-grid" id="quizGrid"></div>
+  </section>
+
+  <!-- SURVIVAL / RANDOM MODE -->
+  <section id="survivalSection" style="display:none;">
+    <div class="survival-wrap">
+      <div class="survival-header">
+        <div>
+          <div class="survival-title">🎲 <em>Random</em> mode</div>
+          <div class="quiz-hint"><span id="survivalAccentHint">accents ignored</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div class="survival-lives" id="survivalLives"></div>
+          <div class="survival-streak-wrap">
+            <span class="survival-streak-label">streak</span>
+            <span class="survival-streak" id="survivalStreak">0</span>
+          </div>
+          <button class="btn-back" onclick="goBack()">← Back</button>
+        </div>
+      </div>
+
+      <div class="survival-card" id="survivalCard">
+        <div class="survival-number" id="survivalNumber">-</div>
+        <div class="survival-input-row">
+          <input class="survival-input" id="survivalInput" type="text" placeholder="Type in Dutch…" autocomplete="off" spellcheck="false" />
+          <button class="survival-submit" onclick="submitSurvival()">→</button>
+        </div>
+        <div class="survival-feedback" id="survivalFeedback"></div>
+      </div>
+
+      <div class="survival-history" id="survivalHistory"></div>
+
+      <div class="survival-gameover" id="survivalGameover" style="display:none;">
+        <div class="gameover-title">Game over</div>
+        <div class="gameover-score">You answered <strong id="gameoverScore">0</strong> correctly</div>
+        <div class="gameover-streak">Best streak: <strong id="gameoverStreak">0</strong></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">
+          <button class="btn-check" onclick="restartSurvival()">Play again</button>
+          <button class="btn-back" onclick="goBack()">← Back</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Getallen - Dutch Number Quiz &nbsp;·&nbsp; Practice makes perfect &nbsp;·&nbsp; <a href="https://github.com/zwagk" target="_blank" rel="noopener" style="color:var(--ink3);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink3)'">github.com/zwagk</a>
+  </footer>
+
+  <script>
+    const DUTCH = {
+      1:'één',2:'twee',3:'drie',4:'vier',5:'vijf',6:'zes',7:'zeven',8:'acht',9:'negen',10:'tien',
+      11:'elf',12:'twaalf',13:'dertien',14:'veertien',15:'vijftien',16:'zestien',17:'zeventien',
+      18:'achttien',19:'negentien',20:'twintig',21:'eenentwintig',22:'tweeëntwintig',
+      23:'drieëntwintig',24:'vierentwintig',25:'vijfentwintig',26:'zesentwintig',
+      27:'zevenentwintig',28:'achtentwintig',29:'negenentwintig',30:'dertig',
+      31:'eenendertig',32:'tweeëndertig',33:'drieëndertig',34:'vierendertig',35:'vijfendertig',
+      36:'zesendertig',37:'zevendertig',38:'achtendertig',39:'negenendertig',40:'veertig',
+      41:'eenenveertig',42:'tweeënveertig',43:'drieënveertig',44:'vierenveertig',45:'vijfenveertig',
+      46:'zesenveertig',47:'zevenenveertig',48:'achtenveertig',49:'negenenveertig',50:'vijftig',
+      51:'eenenvijftig',52:'tweeënvijftig',53:'drieënvijftig',54:'vierenvijftig',55:'vijfenvijftig',
+      56:'zesenvijftig',57:'zevenenvijftig',58:'achtenvijftig',59:'negenenvijftig',60:'zestig',
+      61:'eenenzestig',62:'tweeënzestig',63:'drieënzestig',64:'vierenzestig',65:'vijfenzestig',
+      66:'zesenzestig',67:'zevenzestig',68:'achtenzestig',69:'negenzestig',70:'zeventig',
+      71:'eenenzeventig',72:'tweeënzeventig',73:'drieënzeventig',74:'vierenzeventig',
+      75:'vijfenzeventig',76:'zesenzeventig',77:'zevenenzeventig',78:'achtenzeventig',
+      79:'negenenzeventig',80:'tachtig',81:'eenentachtig',82:'tweeëntachtig',83:'drieëntachtig',
+      84:'vierentachtig',85:'vijfentachtig',86:'zesentachtig',87:'zeventachtig',
+      88:'achtentachtig',89:'negentachtig',90:'negentig',91:'eenennegentig',92:'tweeënnegentig',
+      93:'drieënnegentig',94:'vierenegentig',95:'vijfennegentig',96:'zesennegentig',
+      97:'zevenennegentig',98:'achtennegentig',99:'negenennegentig',100:'honderd'
+    };
+
+    // ── DARK MODE ──
+    let darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    function applyDark() {
+      document.documentElement.classList.toggle('dark', darkMode);
+      document.getElementById('darkToggle').textContent = darkMode ? '☀️' : '🌙';
+    }
+    function toggleDark() {
+      darkMode = !darkMode;
+      applyDark();
+    }
+    applyDark();
+
+    let selectedN = null;
+    let selectedSecs = 300; // 0 = stopwatch / no limit
+    let timerInterval = null;
+    let timeLeft = 0;
+    let totalTime = 0;
+    let elapsed = 0;
+    let isStopwatch = false;
+    let ignoreAccents = true;
+
+    function stripAccents(s) {
+      return s.replace(/é/g,'e').replace(/è/g,'e').replace(/ê/g,'e')
+              .replace(/ë/g,'e').replace(/ï/g,'i').replace(/ü/g,'u')
+              .replace(/ó/g,'o').replace(/ä/g,'a').replace(/ö/g,'o');
+    }
+
+    function normBase(s) {
+      return s.toLowerCase().trim().replace(/[^a-zëéèêïüóäö]/g,'');
+    }
+
+    function compare(userAnswer, ref) {
+      if (ignoreAccents) {
+        return stripAccents(normBase(userAnswer)) === stripAccents(normBase(ref));
+      } else {
+        return normBase(userAnswer) === normBase(ref);
+      }
+    }
+
+    function onAccentToggle() {
+      ignoreAccents = document.getElementById('accentToggle').checked;
+      const badge = document.getElementById('accentBadge');
+      if (ignoreAccents) {
+        badge.textContent = 'ë = e ✓';
+        badge.classList.remove('off');
+      } else {
+        badge.textContent = 'ë ≠ e';
+        badge.classList.add('off');
+      }
+    }
+
+    function selectTimer(secs) {
+      selectedSecs = secs;
+      // deactivate custom box
+      document.getElementById('customWrap').classList.remove('active');
+      document.getElementById('customMins').value = '';
+      // toggle pill buttons
+      document.querySelectorAll('.timer-btn').forEach(b => {
+        b.classList.toggle('active', +b.dataset.secs === secs);
+      });
+    }
+
+    function focusCustom() {
+      document.getElementById('customMins').focus();
+    }
+
+    function onCustomInput() {
+      const val = parseInt(document.getElementById('customMins').value, 10);
+      const wrap = document.getElementById('customWrap');
+      if (val > 0) {
+        selectedSecs = val * 60;
+        wrap.classList.add('active');
+        // deactivate all preset pills
+        document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+      } else {
+        wrap.classList.remove('active');
+        // revert to 5 min default if cleared
+        if (!document.getElementById('customMins').value) {
+          selectedSecs = 300;
+          document.querySelectorAll('.timer-btn').forEach(b => {
+            b.classList.toggle('active', +b.dataset.secs === 300);
+          });
+        }
+      }
+    }
+
+    function fmtTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return m + ':' + String(sec).padStart(2, '0');
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      isStopwatch = (selectedSecs === 0);
+      const disp = document.getElementById('timerDisplay');
+      const bar  = document.getElementById('timerBar');
+
+      if (isStopwatch) {
+        elapsed = 0;
+        document.getElementById('timerVal').textContent = '0:00';
+        disp.classList.add('stopwatch');
+        disp.classList.remove('warning', 'danger');
+        bar.style.width = '0%';
+        bar.style.background = 'var(--ink3)';
+        bar.style.transition = 'none';
+        timerInterval = setInterval(() => {
+          elapsed++;
+          document.getElementById('timerVal').textContent = fmtTime(elapsed);
+          // animate bar filling slowly (cap visual at 10 min = 600s)
+          const fillPct = Math.min((elapsed / 600) * 100, 100);
+          bar.style.width = fillPct + '%';
+        }, 1000);
+      } else {
+        timeLeft = selectedSecs;
+        totalTime = selectedSecs;
+        disp.classList.remove('stopwatch');
+        bar.style.transition = 'width 1s linear, background 0.5s';
+        bar.style.background = '';
+        updateCountdownUI();
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateCountdownUI();
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            checkAnswers(true);
+          }
+        }, 1000);
+      }
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function updateCountdownUI() {
+      const disp = document.getElementById('timerDisplay');
+      const val  = document.getElementById('timerVal');
+      const bar  = document.getElementById('timerBar');
+      val.textContent = fmtTime(timeLeft);
+      const pct = (timeLeft / totalTime) * 100;
+      bar.style.width = pct + '%';
+      disp.classList.remove('warning', 'danger', 'stopwatch');
+      bar.classList.remove('warning', 'danger');
+      if (timeLeft <= 30) {
+        disp.classList.add('danger'); bar.classList.add('danger');
+      } else if (timeLeft <= totalTime * 0.25) {
+        disp.classList.add('warning'); bar.classList.add('warning');
+      }
+    }
+
+    function selectMode(n) {
+      selectedN = n;
+      document.querySelectorAll('.mode-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.n === String(n));
+      });
+      // Timer/accent config only relevant for list quiz; hide for random
+      const configRows = document.querySelectorAll('.config-row, .toggle-row');
+      configRows.forEach(r => r.style.opacity = n === 'random' ? '0.35' : '1');
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('startBtn').textContent = n === 'random' ? '🎲 Start Random' : '▶ Begin Quiz';
+    }
+
+    function startQuiz() {
+      if (!selectedN) return;
+      if (selectedN === 'random') { startSurvival(); return; }
+
+      document.getElementById('heroSection').style.display = 'none';
+      const quiz = document.getElementById('quizSection');
+      quiz.style.display = 'block';
+      document.getElementById('quizRange').textContent = selectedN;
+      document.getElementById('accentHint').textContent = ignoreAccents ? 'accents ignored' : 'accents required';
+      document.getElementById('scoreBanner').classList.remove('visible');
+      document.getElementById('headerScore').classList.remove('visible');
+      document.getElementById('timerDisplay').classList.remove('warning','danger','stopwatch');
+      document.getElementById('timerBar').classList.remove('warning','danger');
+      document.getElementById('timerBar').style.background = '';
+      document.getElementById('timerBar').style.width = selectedSecs === 0 ? '0%' : '100%';
+
+      const grid = document.getElementById('quizGrid');
+      grid.innerHTML = '';
+
+      for (let i = 1; i <= selectedN; i++) {
+        const item = document.createElement('div');
+        item.className = 'quiz-item';
+        item.dataset.n = i;
+
+        const label = document.createElement('span');
+        label.className = 'n-label';
+        label.textContent = i;
+
+        const input = document.createElement('input');
+        input.className = 'ans-input';
+        input.type = 'text';
+        input.placeholder = 'Dutch…';
+        input.autocomplete = 'off';
+        input.spellcheck = false;
+
+        const dot = document.createElement('span');
+        dot.className = 'status-dot';
+
+        const correction = document.createElement('span');
+        correction.className = 'correction';
+
+        item.append(label, input, correction, dot);
+        grid.appendChild(item);
+
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const all = [...grid.querySelectorAll('.ans-input:not(:disabled)')];
+            const idx = all.indexOf(input);
+            if (idx < all.length - 1) all[idx + 1].focus();
+            else checkAnswers();
+          }
+        });
+      }
+
+      grid.querySelector('.ans-input').focus();
+      startTimer();
+    }
+
+    function checkAnswers(timedOut = false) {
+      stopTimer();
+      let correct = 0;
+      const items = document.querySelectorAll('.quiz-item');
+      const total = items.length;
+
+      items.forEach(item => {
+        const n = +item.dataset.n;
+        const input = item.querySelector('.ans-input');
+        const correction = item.querySelector('.correction');
+        const ref = DUTCH[n] || '';
+        const userAnswer = input.value;
+        const isCorrect = compare(userAnswer, ref);
+
+        if (isCorrect) {
+          correct++;
+          item.classList.add('correct');
+          item.classList.remove('wrong');
+          correction.textContent = '';
+        } else {
+          item.classList.add('wrong');
+          item.classList.remove('correct');
+          if (userAnswer.trim()) {
+            input.classList.add('strikethrough');
+          } else {
+            input.placeholder = ref;
+          }
+          correction.textContent = ref;
+        }
+        input.disabled = true;
+      });
+
+      const pct = Math.round(correct / total * 100);
+      document.getElementById('scoreCorrect').textContent = correct;
+      document.getElementById('scoreTotal').textContent = total;
+      document.getElementById('scorePct').textContent = isStopwatch
+        ? 'Completed in ' + fmtTime(elapsed)
+        : pct + '%';
+      document.getElementById('scoreMsg').textContent =
+        timedOut && pct < 100 ? '⏰ Time\'s up! ' + (pct >= 80 ? '👏 Great effort!' : pct >= 60 ? '👍 Good going!' : '📚 Keep at it!') :
+        pct === 100 ? '🎉 Perfect score!' :
+        pct >= 80  ? '👏 Excellent work!' :
+        pct >= 60  ? '👍 Good effort!' :
+        pct >= 40  ? '📚 Keep practicing!' :
+                     '💪 Don\'t give up - try again!';
+
+      document.getElementById('scoreBanner').classList.add('visible');
+
+      const scoreEl = document.getElementById('headerScore');
+      document.getElementById('headerScoreVal').textContent = `${correct}/${total}`;
+      scoreEl.classList.add('visible');
+    }
+
+    // ── SURVIVAL MODE ──
+    const MAX_LIVES = 3;
+    let survivalLives = MAX_LIVES;
+    let survivalScore = 0;
+    let survivalStreak = 0;
+    let survivalBestStreak = 0;
+    let survivalCurrentNum = null;
+    let survivalLocked = false;
+
+    function startSurvival() {
+      survivalLives = MAX_LIVES;
+      survivalScore = 0;
+      survivalStreak = 0;
+      survivalBestStreak = 0;
+      survivalLocked = false;
+
+      document.getElementById('heroSection').style.display = 'none';
+      document.getElementById('quizSection').style.display = 'none';
+      document.getElementById('survivalSection').style.display = 'block';
+      document.getElementById('survivalCard').style.display = 'block';
+      document.getElementById('survivalGameover').style.display = 'none';
+      document.getElementById('survivalHistory').innerHTML = '';
+      document.getElementById('headerScore').classList.remove('visible');
+      document.getElementById('survivalAccentHint').textContent = ignoreAccents ? 'accents ignored' : 'accents required';
+      document.getElementById('survivalInput').value = '';
+      document.getElementById('survivalFeedback').textContent = '';
+      document.getElementById('survivalFeedback').className = 'survival-feedback';
+
+      renderLives();
+      updateSurvivalStreak();
+      nextSurvivalRound();
+
+      const inp = document.getElementById('survivalInput');
+      inp.disabled = false;
+      inp.focus();
+      inp.onkeydown = e => { if (e.key === 'Enter') submitSurvival(); };
+    }
+
+    function restartSurvival() { startSurvival(); }
+
+    function nextSurvivalRound() {
+      survivalCurrentNum = Math.floor(Math.random() * 100) + 1;
+      const numEl = document.getElementById('survivalNumber');
+      numEl.style.transform = 'scale(0.8)';
+      numEl.style.opacity = '0';
+      setTimeout(() => {
+        numEl.textContent = survivalCurrentNum;
+        numEl.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+        numEl.style.transform = 'scale(1)';
+        numEl.style.opacity = '1';
+      }, 60);
+
+      document.getElementById('survivalInput').value = '';
+      document.getElementById('survivalInput').disabled = false;
+      document.getElementById('survivalSubmit') && (document.getElementById('survivalSubmit').disabled = false);
+      document.getElementById('survivalFeedback').textContent = '';
+      document.getElementById('survivalFeedback').className = 'survival-feedback';
+      const card = document.getElementById('survivalCard');
+      card.classList.remove('flash-correct', 'flash-wrong');
+      survivalLocked = false;
+      setTimeout(() => document.getElementById('survivalInput').focus(), 80);
+    }
+
+    function submitSurvival() {
+      if (survivalLocked) return;
+      const inp = document.getElementById('survivalInput');
+      const answer = inp.value.trim();
+      if (!answer) return;
+
+      const ref = DUTCH[survivalCurrentNum] || '';
+      const correct = compare(answer, ref);
+      const card = document.getElementById('survivalCard');
+      const fb = document.getElementById('survivalFeedback');
+      survivalLocked = true;
+      inp.disabled = true;
+
+      // Log to history
+      const histItem = document.createElement('div');
+      histItem.className = 'history-item ' + (correct ? 'h-correct' : 'h-wrong');
+      histItem.innerHTML = `
+        <span class="h-num">${survivalCurrentNum}</span>
+        <span class="h-ans">${correct ? answer : answer}</span>
+        <span class="h-icon">${correct ? '✓' : '✗'}</span>
+      `;
+      const hist = document.getElementById('survivalHistory');
+      hist.prepend(histItem);
+
+      if (correct) {
+        survivalScore++;
+        survivalStreak++;
+        if (survivalStreak > survivalBestStreak) survivalBestStreak = survivalStreak;
+        card.classList.add('flash-correct');
+        fb.textContent = '✓ ' + ref;
+        fb.className = 'survival-feedback correct-fb';
+        updateSurvivalStreak();
+        setTimeout(nextSurvivalRound, 700);
+      } else {
+        survivalLives--;
+        survivalStreak = 0;
+        card.classList.add('flash-wrong');
+        fb.textContent = '✗';
+        fb.className = 'survival-feedback wrong-fb';
+        renderLives();
+        updateSurvivalStreak();
+        if (survivalLives <= 0) {
+          setTimeout(showGameOver, 900);
+        } else {
+          setTimeout(nextSurvivalRound, 1100);
+        }
+      }
+
+      const hScoreEl = document.getElementById('headerScore');
+      document.getElementById('headerScoreVal').textContent = survivalScore;
+      hScoreEl.classList.add('visible');
+    }
+
+    function renderLives() {
+      const el = document.getElementById('survivalLives');
+      el.innerHTML = '';
+      for (let i = 0; i < MAX_LIVES; i++) {
+        const pip = document.createElement('span');
+        pip.className = 'life-pip' + (i >= survivalLives ? ' lost' : '');
+        el.appendChild(pip);
+      }
+    }
+
+    function updateSurvivalStreak() {
+      const el = document.getElementById('survivalStreak');
+      el.textContent = survivalStreak;
+      el.classList.toggle('hot', survivalStreak >= 3);
+    }
+
+    function showGameOver() {
+      document.getElementById('survivalCard').style.display = 'none';
+      const go = document.getElementById('survivalGameover');
+      go.style.display = 'block';
+      document.getElementById('gameoverScore').textContent = survivalScore;
+      document.getElementById('gameoverStreak').textContent = survivalBestStreak;
+    }
+
+    function resetQuiz() {
+      startQuiz();
+    }
+
+    function goBack() {
+      stopTimer();
+      document.getElementById('quizSection').style.display = 'none';
+      document.getElementById('survivalSection').style.display = 'none';
+      document.getElementById('heroSection').style.display = 'block';
+      document.getElementById('headerScore').classList.remove('visible');
+    }
+  </script>
+</body>
+</html>

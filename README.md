@@ -2,7 +2,7 @@
 
 A browser-based Dutch number learning game. A number appears — you type the Dutch translation. Three modes, configurable timer, accent strictness toggle, and a dark mode.
 
-**[▶ Play it live](https://zwagk.github.io/getallen)**
+**[▶ Play it live](https://zwagk.github.io/getallen-quiz)**
 
 ---
 
